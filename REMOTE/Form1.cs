@@ -24,8 +24,8 @@ namespace REMOTE
         {
             // Заголовок окна
             this.Text = "REMOTE - Удалённое выполнение команд";
-            this.Width = 500;
-            this.Height = 350;
+            this.Width = 520;
+            this.Height = 550;
 
             // Поле ввода IP-адреса
             Label lblServer = new Label { Text = "Сервер:", Left = 10, Top = 10, Width = 50 };
@@ -37,11 +37,11 @@ namespace REMOTE
 
             // Поле для ввода команды
             txtCommand = new TextBox { Left = 10, Top = 40, Width = 400 };
-            btnSend = new Button { Text = "Выполнить", Left = 420, Top = 40, Width = 70 };
+            btnSend = new Button { Text = "Выполнить", Left = 420, Top = 40, Width = 80 };
             btnSend.Click += new EventHandler(SendCommand);
 
             // Поле вывода результата
-            txtOutput = new TextBox { Left = 10, Top = 80, Width = 480, Height = 200, Multiline = true, ScrollBars = ScrollBars.Vertical, ReadOnly = true };
+            txtOutput = new TextBox { Left = 10, Top = 80, Width = 480, Height = 400, Multiline = true, ScrollBars = ScrollBars.Vertical, ReadOnly = true };
 
             // Добавляем элементы в форму
             this.Controls.Add(lblServer);
