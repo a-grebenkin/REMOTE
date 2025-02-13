@@ -16,15 +16,24 @@ jobs:
       - name: 🏗 Setup .NET 6.0
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0.x'  # Устанавливаем именно .NET 6.0
+          dotnet-version: '6.0.x'  # Принудительно устанавливаем .NET 6.0
 
       - name: 🔍 Check Installed .NET SDKs
-        run: dotnet --list-sdks  # Проверяем, что установлен .NET 6.0
+        run: dotnet --list-sdks  # Проверяем, какие SDK установлены
+
+      - name: 🚮 Clean Project
+        run: dotnet clean REMOTE/REMOTE.csproj
+
+      - name: 🔄 Restore Dependencies
+        run: dotnet restore REMOTE/REMOTE.csproj
+
+      - name: 🏗 Force x64 MSBuild Mode
+        run: |
+          echo "Setting MSBuild to x64 mode..."
+          set MSBUILD_EXE_PATH="C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\amd64\MSBuild.exe"
 
       - name: 📦 Build REMOTE
         run: |
-          echo "Using MSBuild in x64 mode"
-          set MSBuildEnableX64=1  # Принудительно включаем 64-битный режим MSBuild
           dotnet publish REMOTE/REMOTE.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
 
       - name: 📂 Prepare Artifacts
