@@ -7,19 +7,17 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # Сборка на Windows
+    runs-on: windows-latest  # Используем Windows-среду
 
     steps:
       - name: 🛠 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: 🏗 Setup .NET 6.0
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'  # Принудительно устанавливаем .NET 6.0
+      - name: 🏗 Install .NET SDK (Latest Available)
+        uses: actions/setup-dotnet@v3  # Ставим любую доступную версию
 
       - name: 🔍 Check Installed .NET SDKs
-        run: dotnet --list-sdks  # Проверяем, какие SDK установлены
+        run: dotnet --list-sdks  # Проверяем доступные версии .NET
 
       - name: 🚮 Clean Project
         run: dotnet clean REMOTE/REMOTE.csproj
@@ -27,19 +25,16 @@ jobs:
       - name: 🔄 Restore Dependencies
         run: dotnet restore REMOTE/REMOTE.csproj
 
-      - name: 🏗 Force x64 MSBuild Mode
-        run: |
-          echo "Setting MSBuild to x64 mode..."
-          set MSBUILD_EXE_PATH="C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\amd64\MSBuild.exe"
+      - name: 🏗 Build Project
+        run: dotnet build REMOTE/REMOTE.csproj -c Release --no-restore
 
-      - name: 📦 Build REMOTE
-        run: |
-          dotnet publish REMOTE/REMOTE.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+      - name: 📦 Publish REMOTE
+        run: dotnet publish REMOTE/REMOTE.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true --no-restore
 
       - name: 📂 Prepare Artifacts
         run: |
           mkdir Publish
-          cp REMOTE/bin/Release/net6.0/win-x64/publish/REMOTE.exe Publish/REMOTE.exe
+          cp REMOTE/bin/Release/**/win-x64/publish/REMOTE.exe Publish/REMOTE.exe
           Compress-Archive -Path Publish/* -DestinationPath release.zip
 
       - name: 🚀 Upload Executables to Releases
