@@ -1,0 +1,39 @@
+name: Build and Publish Executables
+
+on:
+  push:
+    branches:
+      - main  # Запуск при пуше в main
+
+jobs:
+  build:
+    runs-on: windows-latest  # Сборка на Windows
+
+    steps:
+      - name: 🛠 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'  # Укажи свою версию .NET
+
+      - name: 📦 Build RPE
+        run: dotnet publish RPE/RPE.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+
+      - name: 📦 Build REMOTE
+        run: dotnet publish REMOTE/REMOTE.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+
+      - name: 📂 Prepare Artifacts
+        run: |
+          mkdir Publish
+          cp RPE/bin/Release/net6.0/win-x64/publish/RPE.exe Publish/RPE.exe
+          cp REMOTE/bin/Release/net6.0/win-x64/publish/REMOTE.exe Publish/REMOTE.exe
+          Compress-Archive -Path Publish/* -DestinationPath release.zip
+
+      - name: 🚀 Upload Executables to Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
