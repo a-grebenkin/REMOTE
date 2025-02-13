@@ -1,4 +1,4 @@
-name: Build and Publish REMOTE Executable (Minimal Release)
+name: Build and Publish REMOTE Executable (Final Fix)
 
 on:
   push:
@@ -29,15 +29,20 @@ jobs:
         run: |
           & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" REMOTE/REMOTE.csproj /p:Configuration=Release /p:PublishSingleFile=true /p:SelfContained=true
 
+      - name: 📂 Check if REMOTE.exe exists
+        run: |
+          echo "Checking if REMOTE.exe exists..."
+          dir REMOTE/bin/Release/**/publish/
+
       - name: 📂 Prepare Minimal Release Archive
         run: |
           mkdir Release
-          cp REMOTE/bin/Release/**/publish/REMOTE.exe Release/REMOTE.exe  # Основной исполняемый файл
-          cp REMOTE/bin/Release/**/publish/*.dll Release/  # Библиотеки, если есть
-          cp REMOTE/bin/Release/**/publish/*.json Release/  # Конфиги, если есть
+          cp REMOTE/bin/Release/**/publish/REMOTE.exe Release/REMOTE.exe
+          cp REMOTE/bin/Release/**/publish/*.dll Release/ || echo "No DLLs found"
+          cp REMOTE/bin/Release/**/publish/*.json Release/ || echo "No JSON files found"
           Compress-Archive -Path Release/* -DestinationPath REMOTE_Release.zip
 
-      - name: 🔍 Check Files Before Upload
+      - name: 🔍 Check Final Archive
         run: dir Release
 
       - name: 🏷 Create GitHub Tag
@@ -47,12 +52,10 @@ jobs:
           git tag -a v1.0.${{ github.run_number }} -m "Release v1.0.${{ github.run_number }}"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git v1.0.${{ github.run_number }}
 
-      - name: 🚀 Upload Minimal Release Archive
+      - name: 🚀 Upload Only Compiled Files
         uses: softprops/action-gh-release@v1
         with:
-          files: REMOTE_Release.zip  # Загружаем только нужный архив
+          files: REMOTE_Release.zip
           tag_name: v1.0.${{ github.run_number }}
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
