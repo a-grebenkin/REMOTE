@@ -40,7 +40,7 @@ jobs:
           git config --local user.email "github-actions@github.com"
           git config --local user.name "GitHub Actions"
           git tag -a v1.0.${{ github.run_number }} -m "Release v1.0.${{ github.run_number }}"
-          git push origin v1.0.${{ github.run_number }}
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git v1.0.${{ github.run_number }}
 
       - name: 🚀 Upload Executables to Releases
         uses: softprops/action-gh-release@v1
