@@ -17,17 +17,13 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'  # Укажи свою версию .NET
-
-      - name: 📦 Build RPE
-        run: dotnet publish RPE/RPE.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
-
+          
       - name: 📦 Build REMOTE
         run: dotnet publish REMOTE/REMOTE.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
 
       - name: 📂 Prepare Artifacts
         run: |
           mkdir Publish
-          cp RPE/bin/Release/net6.0/win-x64/publish/RPE.exe Publish/RPE.exe
           cp REMOTE/bin/Release/net6.0/win-x64/publish/REMOTE.exe Publish/REMOTE.exe
           Compress-Archive -Path Publish/* -DestinationPath release.zip
 
