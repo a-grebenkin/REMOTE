@@ -1,4 +1,4 @@
-name: Build and Publish REMOTE Executable (x86)
+name: Build and Publish REMOTE Executable (Simplified)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # Используем Windows-среду
+    runs-on: windows-latest  # Запуск на Windows
 
     steps:
       - name: 🛠 Checkout Repository
@@ -16,25 +16,16 @@ jobs:
       - name: 🏗 Install .NET SDK (Latest Available)
         uses: actions/setup-dotnet@v3
 
-      - name: 🔍 Check Installed .NET SDKs
-        run: dotnet --list-sdks  # Проверяем доступные версии .NET
-
-      - name: 🚮 Clean Project
-        run: dotnet clean REMOTE/REMOTE.csproj
-
       - name: 🔄 Restore Dependencies
         run: dotnet restore REMOTE/REMOTE.csproj
 
-      - name: 🏗 Build Project
-        run: dotnet build REMOTE/REMOTE.csproj -c Release --no-restore /p:Platform=x86
-
-      - name: 📦 Publish REMOTE (x86)
-        run: dotnet publish REMOTE/REMOTE.csproj -c Release -r win-x86 --self-contained true /p:PublishSingleFile=true --no-restore
+      - name: 🏗 Build and Publish REMOTE
+        run: dotnet publish REMOTE/REMOTE.csproj -c Release --self-contained true /p:PublishSingleFile=true
 
       - name: 📂 Prepare Artifacts
         run: |
           mkdir Publish
-          cp REMOTE/bin/Release/**/win-x86/publish/REMOTE.exe Publish/REMOTE.exe
+          cp REMOTE/bin/Release/**/publish/REMOTE.exe Publish/REMOTE.exe
           Compress-Archive -Path Publish/* -DestinationPath release.zip
 
       - name: 🚀 Upload Executables to Releases
