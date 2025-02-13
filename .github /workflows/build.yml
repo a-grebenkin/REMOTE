@@ -3,7 +3,7 @@ name: Build and Publish Executables
 on:
   push:
     branches:
-      - main  # Запуск при пуше в main
+      - master  # Запуск при пуше в master
 
 jobs:
   build:
