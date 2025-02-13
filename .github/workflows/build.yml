@@ -1,4 +1,4 @@
-name: Build and Publish REMOTE Executable (Simplified)
+name: Build and Publish REMOTE Executable (Fixed)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # Запуск на Windows
+    runs-on: windows-latest  # Используем Windows для сборки
 
     steps:
       - name: 🛠 Checkout Repository
@@ -20,6 +20,8 @@ jobs:
         run: dotnet restore REMOTE/REMOTE.csproj
 
       - name: 🏗 Build and Publish REMOTE
+        env:
+          MSBUILDDISABLENODEREUSE: 1  # Фикс ошибки GenerateResource
         run: dotnet publish REMOTE/REMOTE.csproj -c Release --self-contained true /p:PublishSingleFile=true
 
       - name: 📂 Prepare Artifacts
